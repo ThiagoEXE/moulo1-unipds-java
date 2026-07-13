@@ -16,6 +16,18 @@
         }*/
         IO.println("Soma dos preços: " + cardapio.obtemSomaDosPrecos());
         IO.println("Total de itens em promoção: " + cardapio.obtemTotalDeItensEmPromocao());
+        double precoLimite = 10.00;
+        IO.println("O primeiro preço que é maior que " + precoLimite + ": " + cardapio.obtemPrimeiroPrecoMaiorQueLimite(precoLimite));
+        IO.println("-------");
+
+        //imprimir todos os preços menores ou iguais ao limite
+        for (ItemCardapio item : cardapio.itens) {
+            if(item.preco <= precoLimite) {
+                IO.println("Preço menor que " + precoLimite + ": " + item.preco);
+                continue;
+            }
+        }
+
         IO.println("== Item do Cardápio ==");
         IO.println("Id: " + itemSelecionado.id);
 
@@ -42,9 +54,9 @@
         double preco;
         boolean emPromocao;
         double precoComDesconto;
-        int categoria;
+        CategoriaCardapio categoria;//enum CategoriaCardapio { ENTRADA, PRATOS_PRINCIPAIS, SOBREMESAS, BEBIDAS }
 
-        ItemCardapio(long id, String nome, String descricao, double preco, int categoria) {
+        ItemCardapio(long id, String nome, String descricao, double preco, CategoriaCardapio categoria) {
             this.id = id;
             this.nome = nome;
             this.descricao = descricao;
@@ -56,31 +68,9 @@
             return (preco - precoComDesconto) / preco * 100;
         }
 
-        String obtemNomeCategoria() {
-            /*
-                1 - Entradas
-                2 - Pratos Principais
-                3 - Sobremesas
-                4 - Bebidas
-             */
-            String nomeCategoria;
-            switch (categoria) {
-                case 1:
-                    nomeCategoria = "Entradas";
-                    break;
-                case 2:
-                    nomeCategoria = "Pratos Principais";
-                    break;
-                case 3:
-                    nomeCategoria = "Sobremesas";
-                    break;
-                case 4:
-                    nomeCategoria = "Bebidas";
-                    break;
-                default:
-                    nomeCategoria = "Categoria inválida";
-            }
-            return nomeCategoria;
+        CategoriaCardapio obtemNomeCategoria() {
+            
+            return categoria;
         }
 
         void definePromocao(double precocomDesconto) {
@@ -95,24 +85,24 @@
         ItemCardapio[] itens;
 
         public Cardapio() {
-            ItemCardapio item1 = new ItemCardapio(1L, "Refresco do Chaves", "Suco de limão que parece de tamarindo e tem gosto de groselha.", 2.99, 4);
+            ItemCardapio item1 = new ItemCardapio(1L, "Refresco do Chaves", "Suco de limão que parece de tamarindo e tem gosto de groselha.", 2.99, CategoriaCardapio.BEBIDAS);
 
-            ItemCardapio item2 = new ItemCardapio(2L, "Sanduíche de Presunto do Chaves", "Sanduíche de presunto simples, mas feito com muito amor.", 3.50, 2);
+            ItemCardapio item2 = new ItemCardapio(2L, "Sanduíche de Presunto do Chaves", "Sanduíche de presunto simples, mas feito com muito amor.", 3.50, CategoriaCardapio.PRATOS_PRINCIPAIS);
             item2.definePromocao(2.99);
 
-            ItemCardapio item3 = new ItemCardapio(3L, "Torta de Frango da Dona Florinda", "Torta de frango com recheio cremoso e massa crocante.", 12.99, 2);
+            ItemCardapio item3 = new ItemCardapio(3L, "Torta de Frango da Dona Florinda", "Torta de frango com recheio cremoso e massa crocante.", 12.99, CategoriaCardapio.PRATOS_PRINCIPAIS);
             item3.definePromocao(10.99);
 
-            ItemCardapio item4 = new ItemCardapio(4L, "Pipoca do Quico", "Balde de pipoca preparado com carinho pelo Quico.", 4.99, 2);
+            ItemCardapio item4 = new ItemCardapio(4L, "Pipoca do Quico", "Balde de pipoca preparado com carinho pelo Quico.", 4.99, CategoriaCardapio.PRATOS_PRINCIPAIS);
             item4.definePromocao(3.99);
 
-            ItemCardapio item5 = new ItemCardapio(5L, "Água de Jamaica", "Água aromatizada comhibisco e toque de açúcar.", 2.50, 2);
+            ItemCardapio item5 = new ItemCardapio(5L, "Água de Jamaica", "Água aromatizada comhibisco e toque de açúcar.", 2.50, CategoriaCardapio.PRATOS_PRINCIPAIS);
             item5.definePromocao(2.00);
 
-            ItemCardapio item6 = new ItemCardapio(6L, "Churros do Chaves", "Churros recheados com doce de leite, clássicos e irresistíveis.", 4.99, 3);
+            ItemCardapio item6 = new ItemCardapio(6L, "Churros do Chaves", "Churros recheados com doce de leite, clássicos e irresistíveis.", 4.99, CategoriaCardapio.SOBREMESAS);
             item6.definePromocao(3.99);
 
-            ItemCardapio item7 = new ItemCardapio(7L, "Tacos de Carnitas", "Tacos recheados com carne tenra.", 25.90 , 2);
+            ItemCardapio item7 = new ItemCardapio(7L, "Tacos de Carnitas", "Tacos recheados com carne tenra.", 25.90 , CategoriaCardapio.PRATOS_PRINCIPAIS);
 
             itens = new ItemCardapio[7];
             itens[0] = item1;
@@ -143,4 +133,19 @@
             return totalItensEmPromocao;
         }
 
+        double obtemPrimeiroPrecoMaiorQueLimite(double precoLimite) {
+            double premoMiorQueLimite = -1.0;
+            for (ItemCardapio item : itens) {
+                if(item.preco > precoLimite) {
+                    premoMiorQueLimite = item.preco;
+                    break;
+                }
+            }
+            return premoMiorQueLimite;
+        }
+
     }
+
+enum CategoriaCardapio {
+    ENTRADA, PRATOS_PRINCIPAIS, SOBREMESAS, BEBIDAS;
+}
