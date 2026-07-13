@@ -1,73 +1,146 @@
-void main() {
-    ItemCardapio item2 = new ItemCardapio(1L, "Refresco do Chaves", "Suco de limão que parece de tamarindo e tem gosto de groselha", 2.99, 4);
 
-    item2.definePromocao(2.99);
 
-    IO.println("Nome: " + item2.nome);
-    if(item2.emPromocao) {
-        double porcentagemDesconto = item2.calculaPorcentagemDesconto();
-        IO.println("Porcentagem de desconto: " + porcentagemDesconto);
-        IO.println("Preço de : " + item2.preco + " por " + item2.precoComDesconto);
-    } else{
-        IO.println("Preco: " + item2.preco);
-        IO.println("Item não está em promoçõo");
-    }
-        IO.println("Categoria: " + item2.obtemNomeCategoria());
-}
+      void main() {
 
-class ItemCardapio {
+        Cardapio cardapio = new Cardapio();
 
-    long id;
-    String nome;
-    String descricao;
-    double preco;
-    boolean emPromocao;
-    double precoComDesconto;
-    int categoria;
+        String linha = IO.readln("Digite um ID de item do cardápio: ");
+        long idSelecionado = Long.parseLong(linha); // Parseando a string lida
 
-    ItemCardapio(long id, String nome, String descricao, double preco, int categoria) {
-        this.id = id;
-        this.nome = nome;
-        this.descricao = descricao;
-        this.preco = preco;
-        this.categoria = categoria;
-    }
+        ItemCardapio itemSelecionado = cardapio.itens[((int) idSelecionado) - 1];//buscando o item selecionado no array de cardápio pelo índice (id - 1)
+        /*for (ItemCardapio item : cardapio) {
+            if (item.id == idSelecionado) {
+                itemSelecionado = item;
+                break;
+            }
+        }*/
+        IO.println("Soma dos preços: " + cardapio.obtemSomaDosPrecos());
+        IO.println("Total de itens em promoção: " + cardapio.obtemTotalDeItensEmPromocao());
+        IO.println("== Item do Cardápio ==");
+        IO.println("Id: " + itemSelecionado.id);
 
-    double calculaPorcentagemDesconto() {
-        return (preco - precoComDesconto) / preco * 100;
+        IO.println("Nome: " + itemSelecionado.nome);
+        IO.println("Descrição: " + itemSelecionado.descricao);
+
+        if (itemSelecionado.emPromocao) {
+            IO.println("Item em promoção!");
+            double porcentagemDesconto = itemSelecionado.calculaPorcentagemDesconto();
+            IO.println("Porcentagem de desconto: " + porcentagemDesconto);
+            IO.println("Preço de : " + itemSelecionado.preco + " por " + itemSelecionado.precoComDesconto);
+        } else {
+            IO.println("Preco: " + itemSelecionado.preco);
+            IO.println("Item não está em promoçõo");
+        }
+        IO.println("Categoria: " + itemSelecionado.obtemNomeCategoria());
     }
 
-    String obtemNomeCategoria() {
-        /*
-        1 - Entradas
-        2 - Pratos Principais
-        3 - Sobremesas
-        4 - Bebidas
+    class ItemCardapio {
 
-        */
-       String nomeCategoria;
-       switch(categoria) {
-           case 1:
-               nomeCategoria = "Entradas";
-               break;
-           case 2:
-               nomeCategoria = "Pratos Principais";
-               break;
-           case 3:
-               nomeCategoria = "Sobremesas";
-               break;
-           case 4:
-               nomeCategoria = "Bebidas";
-               break;
-           default:
-               nomeCategoria = "Categoria inválida";
-       }
-       return nomeCategoria;
+        long id;
+        String nome;
+        String descricao;
+        double preco;
+        boolean emPromocao;
+        double precoComDesconto;
+        int categoria;
+
+        ItemCardapio(long id, String nome, String descricao, double preco, int categoria) {
+            this.id = id;
+            this.nome = nome;
+            this.descricao = descricao;
+            this.preco = preco;
+            this.categoria = categoria;
+        }
+
+        double calculaPorcentagemDesconto() {
+            return (preco - precoComDesconto) / preco * 100;
+        }
+
+        String obtemNomeCategoria() {
+            /*
+                1 - Entradas
+                2 - Pratos Principais
+                3 - Sobremesas
+                4 - Bebidas
+             */
+            String nomeCategoria;
+            switch (categoria) {
+                case 1:
+                    nomeCategoria = "Entradas";
+                    break;
+                case 2:
+                    nomeCategoria = "Pratos Principais";
+                    break;
+                case 3:
+                    nomeCategoria = "Sobremesas";
+                    break;
+                case 4:
+                    nomeCategoria = "Bebidas";
+                    break;
+                default:
+                    nomeCategoria = "Categoria inválida";
+            }
+            return nomeCategoria;
+        }
+
+        void definePromocao(double precocomDesconto) {
+            this.emPromocao = true;
+            this.precoComDesconto = precocomDesconto;
+        }
+
     }
 
-    void definePromocao(double precocomDesconto) {
-        this.emPromocao = true;
-        this.precoComDesconto = precocomDesconto;
-    }
+    class Cardapio {
 
-}
+        ItemCardapio[] itens;
+
+        public Cardapio() {
+            ItemCardapio item1 = new ItemCardapio(1L, "Refresco do Chaves", "Suco de limão que parece de tamarindo e tem gosto de groselha.", 2.99, 4);
+
+            ItemCardapio item2 = new ItemCardapio(2L, "Sanduíche de Presunto do Chaves", "Sanduíche de presunto simples, mas feito com muito amor.", 3.50, 2);
+            item2.definePromocao(2.99);
+
+            ItemCardapio item3 = new ItemCardapio(3L, "Torta de Frango da Dona Florinda", "Torta de frango com recheio cremoso e massa crocante.", 12.99, 2);
+            item3.definePromocao(10.99);
+
+            ItemCardapio item4 = new ItemCardapio(4L, "Pipoca do Quico", "Balde de pipoca preparado com carinho pelo Quico.", 4.99, 2);
+            item4.definePromocao(3.99);
+
+            ItemCardapio item5 = new ItemCardapio(5L, "Água de Jamaica", "Água aromatizada comhibisco e toque de açúcar.", 2.50, 2);
+            item5.definePromocao(2.00);
+
+            ItemCardapio item6 = new ItemCardapio(6L, "Churros do Chaves", "Churros recheados com doce de leite, clássicos e irresistíveis.", 4.99, 3);
+            item6.definePromocao(3.99);
+
+            ItemCardapio item7 = new ItemCardapio(7L, "Tacos de Carnitas", "Tacos recheados com carne tenra.", 25.90 , 2);
+
+            itens = new ItemCardapio[7];
+            itens[0] = item1;
+            itens[1] = item2;
+            itens[2] = item3;
+            itens[3] = item4;
+            itens[4] = item5;
+            itens[5] = item6;
+            itens[6] = item7;
+
+        }
+
+        double obtemSomaDosPrecos() {
+            double totalDePrecos = 0.0;
+            for (ItemCardapio item : itens) {
+                totalDePrecos += item.preco;
+            }
+            return totalDePrecos;
+        }
+
+        int obtemTotalDeItensEmPromocao() {
+            int totalItensEmPromocao = 0;
+            for (ItemCardapio item : itens) {
+                if (item.emPromocao) {
+                    totalItensEmPromocao++;
+                }
+            }
+            return totalItensEmPromocao;
+        }
+
+    }
