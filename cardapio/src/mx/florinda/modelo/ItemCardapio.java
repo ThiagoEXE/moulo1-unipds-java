@@ -2,13 +2,13 @@ package mx.florinda.modelo;
 
 public class ItemCardapio {
 
-    private long id;
-    private String nome;
-    private String descricao;
-    private double preco;
+    private final long id;
+    private final String nome;
+    private final String descricao;
+    private final double preco;
     private boolean emPromocao;
     private double precoComDesconto;
-    private CategoriaCardapio categoria;//enum CategoriaCardapio { ENTRADA, PRATOS_PRINCIPAIS, SOBREMESAS, BEBIDAS }
+    private final CategoriaCardapio categoria;//enum CategoriaCardapio { ENTRADA, PRATOS_PRINCIPAIS, SOBREMESAS, BEBIDAS }
 
     protected ItemCardapio(long id, String nome, String descricao, double preco, CategoriaCardapio categoria) {
         this.id = id;
