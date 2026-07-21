@@ -2,39 +2,59 @@ package mx.florinda.modelo;
 
 import mx.florinda.modelo.isento.ItemCardapioIsento;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 public class Cardapio {
 
     private final ItemCardapio[] itens;
 
-    public Cardapio() {
-        final ItemCardapio item1 = new ItemCardapio(1L, "Refresco do Chaves", "Suco de limão que parece de tamarindo e tem gosto de groselha.", 2.99, CategoriaCardapio.BEBIDAS);
+    public Cardapio(String nomeArquivo) throws IOException {
 
-        final ItemCardapio item2 = new ItemCardapio(2L, "Sanduíche de Presunto do Chaves", "Sanduíche de presunto simples, mas feito com muito amor.", 3.50, CategoriaCardapio.PRATOS_PRINCIPAIS);
-        item2.setPromocao(2.99);
+        Path arquivo = Path.of(nomeArquivo);
+        String conteudoArquivo = Files.readString(arquivo);
+        String[] linhasArquivo  = conteudoArquivo.split("\n");
 
-        final ItemCardapio item3 = new ItemCardapio(3L, "Torta de Frango da Dona Florinda", "Torta de frango com recheio cremoso e massa crocante.", 12.99, CategoriaCardapio.PRATOS_PRINCIPAIS);
-        item3.setPromocao(10.99);
+        itens = new ItemCardapio[linhasArquivo.length];//gerando array com tamanha dos dados do .csv
 
-        final ItemCardapio item4 = new ItemCardapioIsento(4L, "Pipoca do Quico", "Balde de pipoca preparado com carinho pelo Quico.", 4.99, CategoriaCardapio.PRATOS_PRINCIPAIS);
-        item4.setPromocao(3.99);
+        for (int i = 0; i < linhasArquivo.length; i++) {//percorre linha a linha
+            String linha = linhasArquivo[i];
 
-        final ItemCardapio item5 = new ItemCardapio(5L, "Água de Jamaica", "Água aromatizada comhibisco e toque de açúcar.", 2.50, CategoriaCardapio.BEBIDAS);
-        item5.setPromocao(2.00);
 
-        final ItemCardapio item6 = new ItemCardapioIsento(6L, "Churros do Chaves", "Churros recheados com doce de leite, clássicos e irresistíveis.", 4.99, CategoriaCardapio.SOBREMESAS);
-        item6.setPromocao(3.99);
+            if (nomeArquivo.endsWith(".csv")){
+                String[] partes = linha.split(";");
+                long id = Long.parseLong(partes[0]);
+                String nome = partes[1];
+                String descricao = partes[2];
+                double preco = Double.parseDouble(partes[3]);
+                CategoriaCardapio categoriaCardapio = CategoriaCardapio.valueOf(partes[4]);//usando enum existente
 
-        final ItemCardapio item7 = new ItemCardapioIsento(7L, "Tacos de Carnitas", "Tacos recheados com carne tenra.", 25.90, CategoriaCardapio.PRATOS_PRINCIPAIS);
 
-        itens = new ItemCardapio[7];
-        itens[0] = item1;
-        itens[1] = item2;
-        itens[2] = item3;
-        itens[3] = item4;
-        itens[4] = item5;
-        itens[5] = item6;
-        itens[6] = item7;
+                ItemCardapio item;
+                boolean impostoIsento = Boolean.parseBoolean(partes[7]);
 
+                if (impostoIsento) {
+                    item = new ItemCardapioIsento(id, nome, descricao, preco, categoriaCardapio);
+                } else {
+                    item = new ItemCardapio(id, nome, descricao, preco, categoriaCardapio);
+                }
+                boolean emPromocao = Boolean.parseBoolean(partes[5]);
+
+                if(emPromocao) {
+                    double precoDesconto = Double.parseDouble(partes[6]);
+                    item.setPromocao(precoDesconto);
+                }
+
+                itens[i] = item;
+
+            } else if(nomeArquivo.endsWith(".json")) {
+
+            } else {
+                IO.println("Arquivo com extensão inválida: " + nomeArquivo);
+            }
+
+        }
     }
 
     public double getSomaDosPrecos() {
