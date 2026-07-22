@@ -1,10 +1,11 @@
 package mx.florinda.modelo;
 
-import mx.florinda.modelo.isento.ItemCardapioIsento;
+import mx.florinda.leitor.FabricaLeitorItensCardapio;
+import mx.florinda.leitor.LeitorItensCardapio;
+import mx.florinda.leitor.LeitorItensCardapioCSV;
+import mx.florinda.leitor.LeitorItensCardapioJSON;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class Cardapio {
 
@@ -12,107 +13,17 @@ public class Cardapio {
 
     public Cardapio(String nomeArquivo) throws IOException {
 
-        Path arquivo = Path.of(nomeArquivo);
-        String conteudoArquivo = Files.readString(arquivo);
-        String[] linhasArquivo  = conteudoArquivo.split("\n");
+        FabricaLeitorItensCardapio fabricaLeitor = new FabricaLeitorItensCardapio();
+        LeitorItensCardapio leitor = fabricaLeitor.criaLeitor(nomeArquivo);
 
-        itens = new ItemCardapio[linhasArquivo.length];//gerando array com tamanha dos dados do .csv
-
-        for (int i = 0; i < linhasArquivo.length; i++) {//percorre linha a linha
-            String linha = linhasArquivo[i];
-
-
-            if (nomeArquivo.endsWith(".csv")){
-                String[] partes = linha.split(";");
-                long id = Long.parseLong(partes[0]);
-                String nome = partes[1];
-                String descricao = partes[2];
-                double preco = Double.parseDouble(partes[3]);
-                CategoriaCardapio categoriaCardapio = CategoriaCardapio.valueOf(partes[4]);//usando enum existente
-
-
-                ItemCardapio item;
-                boolean impostoIsento = Boolean.parseBoolean(partes[7]);
-
-                if (impostoIsento) {
-                    item = new ItemCardapioIsento(id, nome, descricao, preco, categoriaCardapio);
-                } else {
-                    item = new ItemCardapio(id, nome, descricao, preco, categoriaCardapio);
-                }
-                boolean emPromocao = Boolean.parseBoolean(partes[5]);
-
-                if(emPromocao) {
-                    double precoDesconto = Double.parseDouble(partes[6]);
-                    item.setPromocao(precoDesconto);
-                }
-
-                itens[i] = item;
-
-            } else if(nomeArquivo.endsWith(".json")) {
-                linha = linha.replace("[", "");
-                linha = linha.replace("]", "");
-                linha = linha.replace("{", "");
-                linha = linha.replace("}", "");
-                linha = linha.replace("\"", "");
-                String[] partes = linha.split(",");
-
-                String parteId = partes[0];
-                String[] propriedadeEValorId = parteId.split(":");
-                String valorId = propriedadeEValorId[1].trim();
-                //IO.println(valorId);
-                Long id = Long.parseLong(valorId);
-                //IO.println(id);
-
-                String parteNome = partes[1];
-                String[] propriedadeEValorNome = parteNome.split(":");
-                String nome = propriedadeEValorNome[1].trim();
-
-                String parteDescricao = partes[2];
-                String[] propriedadeEValorDescricao = parteDescricao.split(":");
-                String descricao = propriedadeEValorDescricao[1].trim();
-
-                String partePreco = partes[3];
-                String[] propriedadeEValorPreco = partePreco.split(":");
-                String valorPreco = propriedadeEValorPreco[1].trim();
-                double preco = Double.parseDouble(valorPreco);
-
-                String parteCategoria = partes[4];
-                String[] propriedadeEValorCategoria = parteCategoria.split(":");
-                String valorCategoria = propriedadeEValorCategoria[1].trim();
-                CategoriaCardapio categoria = CategoriaCardapio.valueOf(valorCategoria);
-
-                ItemCardapio item = new ItemCardapio(id, nome, descricao, preco, categoria);
-
-                String parteEmPromocao = partes[5];
-                String[] propriedadeEValorEmPromocao = parteEmPromocao.split(":");
-                String valorEmPromocao = propriedadeEValorEmPromocao[1].trim();
-
-                String parteImpostoIsento = partes[7];
-                String[] propriedadeEValorImpostoIsento = parteImpostoIsento.split(":");
-                String valorImpostoIsento = propriedadeEValorImpostoIsento[1].trim();
-
-                boolean impostoIsento = Boolean.parseBoolean(valorImpostoIsento);
-
-                if (impostoIsento) {
-                    item = new ItemCardapioIsento(id, nome, descricao, preco, categoria);
-                } else {
-                    item = new ItemCardapio(id, nome, descricao, preco, categoria);
-                }
-                boolean emPromocao = Boolean.parseBoolean(valorEmPromocao);
-
-                if(emPromocao) {
-                    String partePrecoDesconto = partes[6];
-                    String[] propriedadeEValorPrecoDescono = partePrecoDesconto.split(":");
-                    String valorPrecoDesconto = propriedadeEValorPrecoDescono[1].trim();
-                    double precoDesconto = Double.parseDouble(valorPrecoDesconto);
-                    item.setPromocao(precoDesconto);
-                }
-                itens[i] = item;
-            } else {
-                IO.println("Arquivo com extensão inválida: " + nomeArquivo);
-            }
-
+        if (leitor != null) {
+            itens = leitor.processaArquivo(nomeArquivo);
+        } else {
+            IO.println("A extensão do arquivo é inválida: " + nomeArquivo);
+            itens = new ItemCardapio[0];
         }
+
+
     }
 
     public double getSomaDosPrecos() {

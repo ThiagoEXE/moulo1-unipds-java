@@ -10,7 +10,7 @@ public class ItemCardapio {
     private double precoComDesconto;
     private final CategoriaCardapio categoria;//enum CategoriaCardapio { ENTRADA, PRATOS_PRINCIPAIS, SOBREMESAS, BEBIDAS }
 
-    protected ItemCardapio(long id, String nome, String descricao, double preco, CategoriaCardapio categoria) {
+    public ItemCardapio(long id, String nome, String descricao, double preco, CategoriaCardapio categoria) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
@@ -51,7 +51,7 @@ public class ItemCardapio {
         return categoria;
     }
 
-    void setPromocao(double precocomDesconto) {
+    public void setPromocao(double precocomDesconto) {
         this.emPromocao = true;
         this.precoComDesconto = precocomDesconto;
     }
