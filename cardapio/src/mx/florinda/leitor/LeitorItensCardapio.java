@@ -6,15 +6,18 @@ import java.io.IOException;
 
 public interface LeitorItensCardapio {
 
-    ItemCardapio[] processaArquivo() throws IOException;
+    ItemCardapio[] processaArquivo();
 
-    static LeitorItensCardapio criaLeitor(String nomeArquivo) {
+    static LeitorItensCardapio criaLeitor(String nomeArquivo) throws IllegalAccessException {
+
         LeitorItensCardapio leitor = null;
 
         if (nomeArquivo.endsWith(".csv")){
             leitor = new LeitorItensCardapioCSV(nomeArquivo);
         } else if(nomeArquivo.endsWith(".json")) {
-            leitor = new LeitorItensCardapioJSON(nomeArquivo);
+            leitor = new LeitorItensCardapioGSON(nomeArquivo);
+        } else {
+            throw new IllegalAccessException("Extensão do arquivo é inválida: " + nomeArquivo);
         }
         return leitor;
     }
